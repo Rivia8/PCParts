@@ -1,13 +1,40 @@
 from bs4 import BeautifulSoup
 import requests
 
-page_to_scrape = requests.get("https://quotes.toscrape.com/")
-soup = BeautifulSoup(page_to_scrape.text, "html.parser")
+import time
+import random
 
-quotes = soup.find_all("span", attrs={"class" : "text"})
-authors = soup.find_all("small", attrs={"class":"author"})
 
-for quote in quotes:
-    print(quote.text)
-for author in authors:
-    print(author.text)
+def configure_scan_url():
+    temp = "rx 9070xt"
+    search = temp.split()
+    new_search = []
+    for x in search:
+        new_search.append(x + "+")
+    new_search = ''.join(new_search)
+    scan_url = "https://www.scan.co.uk/search?q=" + new_search
+    return scan_url
+
+
+def find_scan_prices():
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
+    }
+    scan_response = requests.get(configure_scan_url(), headers=headers)
+    scan_soup = BeautifulSoup(scan_response.text, "html.parser")
+    price_tags = scan_soup.find_all('span', class_="price")
+    prices = []
+    for tag in price_tags:
+        raw_text = tag.text
+        clean_text = raw_text.replace('£', '')
+        prices.append(clean_text)
+    cleaned_prices = []
+    for x in prices:
+        try:
+            price = float(x)
+            cleaned_prices.append(price)
+        except:
+            pass
+    print(cleaned_prices)
+        
+find_scan_prices()
