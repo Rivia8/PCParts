@@ -1,11 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" href="{{url_for('static', filename='dist/output.css') }}">
 </head>
 
-<body>
-    <h1>Contents will go here.</h1>
+<body class = "bg-bggreen">
+    
+    <nav class = "w-full bg-drkgreen p-4 shadow-md">
+        <div class = "text-white font-bold text-lg">
+            PC Price Scraper
+        </div>
+    </nav>
+    
+    <div class = "flex flex-col items-center justify-center pt-12">
+        <h1 class = "text-black text-xl font-semibold mb-6">
+            CHECK AVAILABLE PRICES FOR ITEM
+        </h1>
+        <form action = "/" method = "POST">
+            <input type="text" name="user_text" placeholder= "Enter the item here..." value="{{query}}">
+            <button type = "submit"> Submit </button>
+        </form>
+
+        {% if prices %}
+            <div class = "mt-8">
+                <h2 class = "text-xl font-semibold"> Prices for "{{query}}": </h2>
+                
+                <ul class = "list-disc pl-5 mt-2">
+                    {% for price in prices %}
+                        <li>£{{ "%.2f"|format(price) }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    
 </body>
 
 </html>
