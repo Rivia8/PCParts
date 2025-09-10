@@ -7,7 +7,7 @@
 <body class = "bg-bggreen">
     
     <nav class = "w-full bg-drkgreen p-4 shadow-md">
-        <div class = "text-white font-bold text-lg">
+        <div class = "text-white text-center font-bold text-lg">
             PC Price Scraper
         </div>
     </nav>
@@ -21,20 +21,34 @@
             <button type = "submit"> Submit </button>
         </form>
 
-        {% if prices %}
-            <div class = "mt-8">
-                <h2 class = "text-xl font-semibold"> Prices for "{{query}}": </h2>
-                
-                <ul class = "list-disc pl-5 mt-2">
-                    {% for price in prices %}
-                        <li>£{{ "%.2f"|format(price) }}</li>
-                    {% endfor %}
-                </ul>
+        {% if products %}
+            <div class = "mt-8 w-full max-w-5x1 px-4">
+                <h2 class = "text-xl font-semibold text-center mb-4"> Results for "{{query}}": </h2>
+                <!-- Table Starts Here -->
+                <table class = "w-full table-auto border-collapse border border-slate-400">
+                    <thead>
+                        <tr class = "bg-drkgreen text-left">
+                            <th class="border border-slate-300 p-2">Product Name</th>
+                            <th class="border border-slate-300 p-2">Price</th>
+                            <th class="border border-slate-300 p-2">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td class="border border-slate-300 p-2">{{ product.name }}</td>
+                            <td class="border border-slate-300 p-2">{{ product.price }}</td>
+                            <td class="border border-slate-300 p-2">
+                                <a href = "http://{{ product.url }}" rel = "noopener noreferrer" class = "text-blue-600 hover:underline">
+                                    View on Scan.co.uk
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% endif %}
     </div>
-
-    
 </body>
-
 </html>
