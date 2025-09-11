@@ -22,7 +22,7 @@ def find_scan_products(search_item):
     
     product_containers = scan_soup.find_all('li', class_='product')
     
-    base_url = 'www.scan.co.uk'
+    base_url = 'https://www.scan.co.uk'
     products_list = []
 
     for container in product_containers:
@@ -42,5 +42,4 @@ def find_scan_products(search_item):
                 })
         except AttributeError:
             continue
-    print(products_list)
     return products_list
