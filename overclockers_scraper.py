@@ -3,7 +3,6 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from selenium import webdriver
-from selenium.webdriver import FirefoxOptions
 from selenium.webdriver.common.by import By
 
 '''URL configurator based on OverClockers querying'''
@@ -16,7 +15,7 @@ def configure_oc_url(search_item):
     oc_url = 'https://www.overclockers.co.uk/?query=' + new_search
     return oc_url
 
-'''Produces a dictionary of products with product names, urls and price'''
+'''Produces an array of dictionaries of products consisting product names, urls and price'''
 def find_oc_products(search_item):
     
     options = webdriver.FirefoxOptions()
