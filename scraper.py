@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 import requests
-
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
-}
 
 '''Changing how the url looks based on how Scan queries for searches'''
 def configure_scan_url(search_item):
@@ -43,3 +43,4 @@ def find_scan_products(search_item):
         except AttributeError:
             continue
     return products_list
+

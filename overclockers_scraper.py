@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-'''URL configurator based on OverClockers querying'''
+'''URL configurator based on Overclockers querying'''
 def configure_oc_url(search_item):
     search = search_item.split()
     new_search = []
@@ -23,7 +23,7 @@ def find_oc_products(search_item):
     # options.add_argument('--height=1080')
     options.add_argument("-headless")
 
-    driver = webdriver.Firefox(options = options) 
+    driver = webdriver.Firefox(options = options)
     driver.get(configure_oc_url(search_item))
 
     sleep(0.5)  # Sleep in order to wait for the cookie page to load

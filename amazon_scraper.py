@@ -3,11 +3,9 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-base_url = 'https://www.amazon.co.uk'
-
 '''Method to configure Amazon url'''
 def configure_amazon_url(search_item):
-    start_url = base_url + '/s?k='
+    start_url = 'https://www.amazon.co.uk/s?k='
     search = search_item.split()
     new_search = []
     for x in search:
@@ -18,6 +16,7 @@ def configure_amazon_url(search_item):
 
 '''Using Selenium to produce an array of dictionaries, of products'''
 def find_amazon_products(search_item):
+    base_url = 'https://www.amazon.co.uk'
     amazon_url = configure_amazon_url(search_item)
     options = webdriver.FirefoxOptions()
     # options.add_argument('--width=1920')
