@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from scan_scraper import find_scan_products
+from scraper import get_all_products
 
 app = Flask(__name__)
 
@@ -13,7 +13,7 @@ def index():
         query = request.form.get('user_text', '')
         if query:
             # Returns a list of products
-            products = find_scan_products(query)
+            products = get_all_products(query)
         
     return render_template("index.html", products = products, query=query)
 
