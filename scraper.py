@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import requests
 
+from operator import itemgetter
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
 }
@@ -50,7 +52,7 @@ def configure_ccl_url(search_item):
     ccl_url = 'https://www.cclonline.com/search/?q=' + new_search
     return ccl_url
 
-'''Using Selenium to produce an array of dictionaries, of products'''
+'''Using Selenium to produce an array of dictionaries, of all_products'''
 def find_amazon_products(search_item):
     base_url = 'www.amazon.co.uk'
     amazon_url = configure_amazon_url(search_item)
@@ -82,7 +84,7 @@ def find_amazon_products(search_item):
             if name_element and price_whole_element:
                 product_name = name_element.text.strip()
                 product_url = base_url + name_element_link['href']
-                price = price_whole_element.text.strip() + price_frac_element.text.strip()
+                price = '£' + price_whole_element.text.strip() + price_frac_element.text.strip()
 
                 products_list.append({
                     'name': product_name,
@@ -94,7 +96,7 @@ def find_amazon_products(search_item):
     
     return products_list
 
-'''Returns an array of dictionaries of SCAN products'''
+'''Returns an array of dictionaries of SCAN all_products'''
 def find_scan_products(search_item):
     scan_response = requests.get(configure_scan_url(search_item), headers=headers)
     scan_soup = BeautifulSoup(scan_response.text, 'html.parser')
@@ -125,7 +127,7 @@ def find_scan_products(search_item):
 
 
 
-'''Produces an array of dictionaries of products consisting product names, urls and price'''
+'''Produces an array of dictionaries of all_products consisting product names, urls and price'''
 def find_oc_products(search_item):
     
     options = webdriver.FirefoxOptions()
@@ -169,7 +171,7 @@ def find_oc_products(search_item):
     
     return products_list
 
-'''Returns an array of dictionaries of CCL products'''
+'''Returns an array of dictionaries of CCL all_products'''
 def find_ccl_products(search_item):
 
     base_url = 'www.cclonline.com'
@@ -218,7 +220,13 @@ def get_all_products(search_item):
     ccl_prodcuts = find_ccl_products(search_item)
 
     all_products = amazon_products + scan_products + oc_products + ccl_prodcuts
-    return all_products
+    cleaned_products = []
+    for x in all_products:
+        p = (x['price'].replace('£', '').replace(',', ''))
+        x['price'] = float(p)
+        cleaned_products.append(x)
+
+    sorted_products = sorted(cleaned_products, key=itemgetter('price'))
+    return sorted_products    
 
 '''Print test statements'''
-# print(get_all_products('rtx 5080'))
