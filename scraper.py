@@ -2,9 +2,11 @@ from bs4 import BeautifulSoup
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common import NoSuchElementException, ElementNotInteractableException
 from bs4 import BeautifulSoup
 import requests
-
 from operator import itemgetter
 
 headers = {
@@ -52,7 +54,7 @@ def configure_ccl_url(search_item):
     ccl_url = 'https://www.cclonline.com/search/?q=' + new_search
     return ccl_url
 
-'''Using Selenium to produce an array of dictionaries, of all_products'''
+'''Returns an array of dictionaries of amazon products'''
 def find_amazon_products(search_item):
     base_url = 'www.amazon.co.uk'
     amazon_url = configure_amazon_url(search_item)
@@ -64,9 +66,8 @@ def find_amazon_products(search_item):
     driver = webdriver.Firefox(options = options)
     driver.get(amazon_url)
 
-    sleep(2)
-    cookie_button = driver.find_element(By.ID,'sp-cc-rejectall-link')
-    cookie_button.click()
+    wait = WebDriverWait(driver, 5)
+    wait.until(EC.element_to_be_clickable((By.ID,'sp-cc-rejectall-link'))).click()
 
     html = driver.page_source
     amazon_soup = BeautifulSoup(html, 'html.parser')
@@ -125,8 +126,6 @@ def find_scan_products(search_item):
             continue
     return products_list
 
-
-
 '''Produces an array of dictionaries of all_products consisting product names, urls and price'''
 def find_oc_products(search_item):
     
@@ -138,17 +137,15 @@ def find_oc_products(search_item):
     driver = webdriver.Firefox(options = options)
     driver.get(configure_oc_url(search_item))
 
-    sleep(0.5)  # Sleep in order to wait for the cookie page to load
-    cookie_button = driver.find_element(By.ID, "CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")
-    cookie_button.click()
-
-    sleep(2)
+    wait = WebDriverWait(driver, 5)
+    wait.until(EC.element_to_be_clickable((By.ID,'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))).click()
+   
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.ais-Stats")))
     html = driver.page_source
     oc_soup = BeautifulSoup(html, 'html.parser')
     row_listings = oc_soup.find('div', class_='row row--listing js-hide--empty-search')
     cols = row_listings.find_all('div', class_='col')
 
-    sleep(0.5)
     products_list = []
     base_url = 'www.overclockers.co.uk'
     for col in cols:
@@ -177,18 +174,16 @@ def find_ccl_products(search_item):
     base_url = 'www.cclonline.com'
 
     options = webdriver.FirefoxOptions()
-    # options.add_argument('--width=1920')
-    # options.add_argument('--height=1080')
-    options.add_argument("-headless")
+    options.add_argument('--width=1920')
+    options.add_argument('--height=1080')
+    # options.add_argument("-headless")
 
     driver = webdriver.Firefox(options = options)
     driver.get(configure_ccl_url(search_item))
 
-    sleep(0.5)
-    cookie_button = driver.find_element(By.ID, 'onetrust-accept-btn-handler')
-    cookie_button.click()
-    
-    sleep(0.5)
+    wait = WebDriverWait(driver, 5)
+    wait.until(EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))).click()
+
     html = driver.page_source
     ccl_soup = BeautifulSoup(html, 'html.parser')
     listing_chunk = ccl_soup.find('div', class_='productListContainer pt-3 row px-2 px-xs-3 px-sm-3 px-md-0 mx-md-n2')
@@ -230,3 +225,4 @@ def get_all_products(search_item):
     return sorted_products    
 
 '''Print test statements'''
+print(find_ccl_products('rtx 5080'))
