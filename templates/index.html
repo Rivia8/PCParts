@@ -1,54 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="{{url_for('static', filename='dist/output.css') }}">
+    <link rel='stylesheet' href='{{url_for("static", filename="dist/output.css") }}'>
 </head>
 
-<body class = "bg-bggreen">
+<body class = 'bg-bg'>
     
-    <nav class = "w-full bg-drkgreen p-4 shadow-md">
-        <div class = "text-white text-center font-bold text-lg">
-            PC Price Scraper
+    <nav class = 'w-full bg-accent p-4 shadow-highlights shadow-md'>
+        <div class = 'text-white text-center font-bold text-lg'>
+            FIND PC PART PRICES
         </div>
     </nav>
     
-    <div class = "flex flex-col items-center justify-center pt-12">
-        <h1 class = "text-black text-xl font-semibold mb-6">
-            CHECK AVAILABLE PRICES FOR ITEM
-        </h1>
-        <form action = "/" method = "POST">
-            <input type="text" name="user_text" placeholder= "Enter the item here..." value="{{query}}">
-            <button type = "submit"> Submit </button>
-        </form>
+    <div class = 'pt-12 flex flex-col justify-center items-center'>
 
-        {% if products %}
-            <div class = "mt-8 w-full max-w-5x1 px-4">
-                <h2 class = "text-xl font-semibold text-center mb-4"> Results for "{{query}}": </h2>
-                <!-- Table Starts Here -->
-                <table class = "w-full table-auto border-collapse border border-slate-400">
-                    <thead>
-                        <tr class = "bg-drkgreen text-left">
-                            <th class="border border-slate-300 p-2">Product Name</th>
-                            <th class="border border-slate-300 p-2">Price</th>
-                            <th class="border border-slate-300 p-2">Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for product in products %}
-                        <tr>
-                            <td class="border border-slate-300 p-2">{{ product.name }}</td>
-                            <td class="border border-slate-300 p-2">{{ product.price }}</td>
-                            <td class="border border-slate-300 p-2">
-                                <a href = "http://{{ product.url }}" rel = "noopener noreferrer" class = "text-blue-600 hover:underline">
-                                    View Website to Purchase
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
+        <h1 class = 'text-white underline text-4xl font-bold mb-4'>Welcome to the PC part Price Scraper!</h1>
+        <p class = 'text-white mb-8'>Click the button below to start searching for components.</p>
+
+        <a href = '{{ url_for("new_parts") }}' 
+        class = 'bg-accent hover:bg-highlights text-white font-bold py-3 px-6 rounded-lg transition-colors'>
+            FIND NEW PARTS
+        </a>
     </div>
 </body>
 </html>
