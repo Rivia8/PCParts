@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-    --color-bggreen: #ECFAE5;
-    --color-lgreen: #DDF6D2;
-    --color-green: #CAE8BD;
-    --color-drkgreen: #B0DB9C;
+    /* rich black */
+    --color-bg: #00171F; 
+    /* Cerulean */
+    --color-accent: #007EA7;
+    /* Picton blue */
+    --color-highlights: #00A7E1;
 }
