@@ -2,9 +2,12 @@ from flask import Flask, render_template, request
 from scraper import get_all_products
 
 app = Flask(__name__)
-
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 def index():
+    return render_template('index.html')
+
+@app.route("/newparts", methods=['GET', 'POST'])
+def new_parts():
     products = []
     query = ""
 
@@ -15,7 +18,7 @@ def index():
             # Returns a list of products
             products = get_all_products(query)
         
-    return render_template("index.html", products = products, query=query)
+    return render_template("NewParts.html", products = products, query=query)
 
 if __name__ == "__main__":
     app.run(debug=True)
