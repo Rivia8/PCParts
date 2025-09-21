@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common import NoSuchElementException, ElementNotInteractableException
+from selenium.common import TimeoutException
 from bs4 import BeautifulSoup
 import requests
 from operator import itemgetter
@@ -66,34 +66,36 @@ def find_amazon_products(search_item):
     driver = webdriver.Firefox(options = options)
     driver.get(amazon_url)
 
-    wait = WebDriverWait(driver, 5)
-    wait.until(EC.element_to_be_clickable((By.ID,'sp-cc-rejectall-link'))).click()
+    try:
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.element_to_be_clickable((By.ID,'sp-cc-rejectall-link'))).click()
 
-    html = driver.page_source
-    amazon_soup = BeautifulSoup(html, 'html.parser')
-    listing_chunk = amazon_soup.find('div', class_='sg-col-4-of-4 sg-col-20-of-24 s-matching-dir sg-col-16-of-20 sg-col sg-col-12-of-12 sg-col-8-of-8 sg-col-12-of-16')
-    listings = listing_chunk.find_all('div', class_='sg-col-4-of-4 sg-col-20-of-24 s-result-item s-asin sg-col-16-of-20 sg-col sg-col-12-of-12 s-widget-spacing-small sg-col-8-of-8 sg-col-12-of-16')
+        html = driver.page_source
+        amazon_soup = BeautifulSoup(html, 'html.parser')
+        listing_chunk = amazon_soup.find('div', class_='sg-col-4-of-4 sg-col-20-of-24 s-matching-dir sg-col-16-of-20 sg-col sg-col-12-of-12 sg-col-8-of-8 sg-col-12-of-16')
+        listings = listing_chunk.find_all('div', class_='sg-col-4-of-4 sg-col-20-of-24 s-result-item s-asin sg-col-16-of-20 sg-col sg-col-12-of-12 s-widget-spacing-small sg-col-8-of-8 sg-col-12-of-16')
 
-    sleep(0.5)
-    products_list =[]
-    for listing in listings:
-        try:
-            name_element_link = listing.find('a', class_ = 'a-link-normal s-line-clamp-2 s-line-clamp-3-for-col-12 s-link-style a-text-normal')
-            name_element = name_element_link.find('span')
-            price_whole_element = listing.find('span', class_='a-price-whole')
-            price_frac_element = listing.find('span', class_='a-price-fraction')
-            if name_element and price_whole_element:
-                product_name = name_element.text.strip()
-                product_url = base_url + name_element_link['href']
-                price = '£' + price_whole_element.text.strip() + price_frac_element.text.strip()
+        products_list =[]
+        for listing in listings:
+            try:
+                name_element_link = listing.find('a', class_ = 'a-link-normal s-line-clamp-2 s-line-clamp-3-for-col-12 s-link-style a-text-normal')
+                name_element = name_element_link.find('span')
+                price_whole_element = listing.find('span', class_='a-price-whole')
+                price_frac_element = listing.find('span', class_='a-price-fraction')
+                if name_element and price_whole_element:
+                    product_name = name_element.text.strip()
+                    product_url = base_url + name_element_link['href']
+                    price = '£' + price_whole_element.text.strip() + price_frac_element.text.strip()
 
-                products_list.append({
-                    'name': product_name,
-                    'url': product_url,
-                    'price': price
-                })
-        except AttributeError:
-            continue
+                    products_list.append({
+                        'name': product_name,
+                        'url': product_url,
+                        'price': price
+                    })
+            except AttributeError:
+                continue
+    except TimeoutException:
+        print("The webpage did not load in time")
     
     return products_list
 
@@ -137,35 +139,38 @@ def find_oc_products(search_item):
     driver = webdriver.Firefox(options = options)
     driver.get(configure_oc_url(search_item))
 
-    wait = WebDriverWait(driver, 5)
-    wait.until(EC.element_to_be_clickable((By.ID,'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))).click()
-   
-    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.ais-Stats")))
-    html = driver.page_source
-    oc_soup = BeautifulSoup(html, 'html.parser')
-    row_listings = oc_soup.find('div', class_='row row--listing js-hide--empty-search')
-    cols = row_listings.find_all('div', class_='col')
-
-    products_list = []
-    base_url = 'www.overclockers.co.uk'
-    for col in cols:
-        try:
-            name_element = col.find('h6', class_='h5 lh-1-4 mb-0 text-break').find('a')
-            price_element = col.find('span', class_='price__amount')
-
-            if name_element and price_element:
-                product_name = name_element.text.strip()
-                product_url = base_url + name_element['href']
-                price = price_element.text.strip()
-
-                products_list.append({
-                    'name': product_name,
-                    'url': product_url,
-                    'price': price
-                })
-        except AttributeError:
-            continue
+    try:
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.element_to_be_clickable((By.ID,'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))).click()
     
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.ais-Stats")))
+        html = driver.page_source
+        oc_soup = BeautifulSoup(html, 'html.parser')
+        row_listings = oc_soup.find('div', class_='row row--listing js-hide--empty-search')
+        cols = row_listings.find_all('div', class_='col')
+
+        products_list = []
+        base_url = 'www.overclockers.co.uk'
+        for col in cols:
+            try:
+                name_element = col.find('h6', class_='h5 lh-1-4 mb-0 text-break').find('a')
+                price_element = col.find('span', class_='price__amount')
+
+                if name_element and price_element:
+                    product_name = name_element.text.strip()
+                    product_url = base_url + name_element['href']
+                    price = price_element.text.strip()
+
+                    products_list.append({
+                        'name': product_name,
+                        'url': product_url,
+                        'price': price
+                    })
+            except AttributeError:
+                continue
+    except TimeoutException:
+        print("The webpage did not load in time")
+
     return products_list
 
 '''Returns an array of dictionaries of CCL all_products'''
@@ -174,38 +179,40 @@ def find_ccl_products(search_item):
     base_url = 'www.cclonline.com'
 
     options = webdriver.FirefoxOptions()
-    options.add_argument('--width=1920')
-    options.add_argument('--height=1080')
-    # options.add_argument("-headless")
+    # options.add_argument('--width=1920')
+    # options.add_argument('--height=1080')
+    options.add_argument("-headless")
 
-    driver = webdriver.Firefox(options = options)
-    driver.get(configure_ccl_url(search_item))
+    try:
+        driver = webdriver.Firefox(options = options)
+        driver.get(configure_ccl_url(search_item))
 
-    wait = WebDriverWait(driver, 5)
-    wait.until(EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))).click()
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))).click()
 
-    html = driver.page_source
-    ccl_soup = BeautifulSoup(html, 'html.parser')
-    listing_chunk = ccl_soup.find('div', class_='productListContainer pt-3 row px-2 px-xs-3 px-sm-3 px-md-0 mx-md-n2')
-    listings = listing_chunk.find_all('div', class_='productListOverlayWrapper position-relative col-12 col-xs-6 col-sm-6 col-md-4 px-2 px-xs-0 px-sm-2')
+        html = driver.page_source
+        ccl_soup = BeautifulSoup(html, 'html.parser')
+        listing_chunk = ccl_soup.find('div', class_='productListContainer pt-3 row px-2 px-xs-3 px-sm-3 px-md-0 mx-md-n2')
+        listings = listing_chunk.find_all('div', class_='productListOverlayWrapper position-relative col-12 col-xs-6 col-sm-6 col-md-4 px-2 px-xs-0 px-sm-2')
 
-    products_list = []
-    for listing in listings:
-        try:
-            name_element = listing.find('h3', class_='product-name text-center').find('a')
-            price_element = listing.find('p', class_='order-xs-2')
-            if name_element and price_element:
-                product_name = name_element.text
-                product_url = base_url + name_element['href']
-                price = price_element.text.strip().split()[0]
-                products_list.append({
-                    'name': product_name,
-                    'url': product_url,
-                    'price': price
-                })
-        except AttributeError:
-            continue
-    
+        products_list = []
+        for listing in listings:
+            try:
+                name_element = listing.find('h3', class_='product-name text-center').find('a')
+                price_element = listing.find('p', class_='order-xs-2')
+                if name_element and price_element:
+                    product_name = name_element.text
+                    product_url = base_url + name_element['href']
+                    price = price_element.text.strip().split()[0]
+                    products_list.append({
+                        'name': product_name,
+                        'url': product_url,
+                        'price': price
+                    })
+            except AttributeError:
+                continue
+    except TimeoutException:
+        print('The webpage did not load in time')
     return products_list
 
 def get_all_products(search_item):
@@ -222,7 +229,10 @@ def get_all_products(search_item):
         cleaned_products.append(x)
 
     sorted_products = sorted(cleaned_products, key=itemgetter('price'))
-    return sorted_products    
+    return sorted_products
+    # search_item = search_item
+    # temp = [{'name': 'gpu1', 'url': 'gpu.com', 'price': '458'}]
+    # return temp
 
 '''Print test statements'''
-print(find_ccl_products('rtx 5080'))
+# print(find_amazon_products('rtx 5080'))
