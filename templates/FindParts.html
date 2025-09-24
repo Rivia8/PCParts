@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel='stylesheet' href='{{url_for("static", filename="dist/output.css") }}'>
+</head>
+
+<body class = 'bg-bg'>
+    
+    <nav class = 'w-full bg-accent p-4 shadow-highlights shadow-md'>
+        <a href = '{{ url_for("index") }}' class = 'text-white flex justify-center text-center font-bold text-lg'>
+            FIND PC PART PRICES
+        </a>
+    </nav>
+    
+    <div class = 'flex flex-col items-center justify-center pt-12'>
+        <h1 class = 'text-white underline text-xl font-semibold mb-6'>
+            CHECK PRICES FOR ITEMS
+        </h1>
+
+
+        <form class = 'text-white px-5 py-3 border-solid cursor-auto shadow-sm shadow-white' action = '/findparts' method = 'POST'>
+            <input class = 'outline-none' type='text' name='user_text' placeholder= 'Enter the item here...' value='{{query}}'>
+            <button class = 'font-bold cursor-pointer' type = 'submit'> SUBMIT </button>
+            <div class = 'flex-row pt-3'>
+                <input type='checkbox' id='enableUsed' name="used_parts_check" class = 'mr-2'>
+                <label for='enabledUsed' class = 'text-white'>Enable Used Parts</label>
+            </div>
+        </form>
+        
+        {% if products %}
+            <div class = 'text-white justify-center mt-8 w-full max-w-5xl px-4'>
+                <h2 class = 'text-xl font-semibold text-center mb-4'> Results for '{{query}}': </h2>
+                <!-- Table Starts Here -->
+                <table class = 'w-3/4 mx-auto table-auto border-collapse border'>
+                    <thead>
+                        <tr class = 'bg-accent text-left'>
+                            <th class='border border-accent p-2'>Product Name</th>
+                            <th class='border border-accent p-2'>Price</th>
+                            <th class='border border-accent p-2'>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td class='border border-accent p-2'>{{ product.name }}</td>
+                            <td class='border border-accent p-2'>{{ product.price }}</td>
+                            <td class='border border-accent p-2'>
+                                <a href = 'http://{{ product.url }}' rel = 'noopener noreferrer' class = 'text-highlights hover:underline'>
+                                    View Website to Purchase
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
