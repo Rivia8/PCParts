@@ -6,7 +6,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route("/newparts", methods=['GET', 'POST'])
+@app.route("/findparts", methods=['GET', 'POST'])
 def new_parts():
     products = []
     query = ""
@@ -14,11 +14,13 @@ def new_parts():
     # Only runs when the user submits the form
     if request.method == 'POST':
         query = request.form.get('user_text', '')
+
+        is_used = 'used_parts_check' in request.form
         if query:
             # Returns a list of products
-            products = get_all_products(query)
+            products = get_all_products(query, is_used)
         
-    return render_template("NewParts.html", products = products, query=query)
+    return render_template("FindParts.html", products = products, query=query)
 
 if __name__ == "__main__":
     app.run(debug=True)
