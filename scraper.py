@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -13,7 +12,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36'
 }
 
-'''Method to configure Amazon url'''
+'''Amazon url configurator'''
 def configure_amazon_url(search_item):
     start_url = 'https://www.amazon.co.uk/s?k='
     search = search_item.split()
@@ -24,7 +23,17 @@ def configure_amazon_url(search_item):
     amazon_url = start_url + new_search
     return amazon_url
 
-'''Changing how the url looks based on how Scan queries for searches'''
+'''eBay url configurator'''
+def configure_eBay_url(search_item):
+    search = search_item.split()
+    new_search = []
+    for x in search:
+        new_search.append(x + '+')
+    new_search = ''.join(new_search)
+    scan_url = 'https://www.ebay.co.uk/sch/i.html?_nkw=' + new_search
+    return scan_url
+    
+'''Scan url configurator'''
 def configure_scan_url(search_item):
     search = search_item.split()
     new_search = []
@@ -34,7 +43,7 @@ def configure_scan_url(search_item):
     scan_url = 'https://www.scan.co.uk/search?q=' + new_search
     return scan_url
 
-'''URL configurator based on Overclockers querying'''
+'''Overclockers url configurator'''
 def configure_oc_url(search_item):
     search = search_item.split()
     new_search = []
@@ -44,7 +53,7 @@ def configure_oc_url(search_item):
     oc_url = 'https://www.overclockers.co.uk/?query=' + new_search
     return oc_url
 
-'''URL Configurator based on CCL's querying'''
+'''CCL url configurator '''
 def configure_ccl_url(search_item):
     search = search_item.split()
     new_search = []
@@ -99,6 +108,45 @@ def find_amazon_products(search_item):
     
     return products_list
 
+def find_eBay_products(search_item):
+    ebay_url = configure_eBay_url(search_item)
+    options = webdriver.FirefoxOptions()
+    # options.add_argument('--width=1920')
+    # options.add_argument('--height=1080')
+    options.add_argument("-headless")
+    driver = webdriver.Firefox(options = options)
+    driver.get(ebay_url)
+
+    try:
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.element_to_be_clickable((By.ID,'gdpr-banner-decline'))).click()
+
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'srp-controls__count-heading')))
+        html = driver.page_source
+        eBay_soup = BeautifulSoup(html, 'html.parser')
+        listing_chunk = eBay_soup.find('div', class_='srp-river-main')
+        listings = listing_chunk.find_all('div', class_='su-card-container__content')
+        products_list = []
+        for listing in listings:
+            try:
+                name_element = listing.find('a', class_='su-link')
+                price_element = listing.find('div', class_='s-card__attribute-row').find('span', class_='su-styled-text primary bold large-1 s-card__price')
+                if name_element and price_element:
+                    product_name = name_element.text.strip()
+                    product_url = name_element['href']
+                    price = price_element.text.strip()
+
+                    products_list.append({
+                        'name': product_name,
+                        'url': product_url,
+                        'price': price
+                    })
+            except AttributeError:
+                continue
+    except TimeoutException:
+        print("The webpage did not load in time")
+    return products_list
+
 '''Returns an array of dictionaries of SCAN all_products'''
 def find_scan_products(search_item):
     scan_response = requests.get(configure_scan_url(search_item), headers=headers)
@@ -143,7 +191,7 @@ def find_oc_products(search_item):
         wait = WebDriverWait(driver, 5)
         wait.until(EC.element_to_be_clickable((By.ID,'CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))).click()
     
-        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.ais-Stats")))
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.ais-Stats')))
         html = driver.page_source
         oc_soup = BeautifulSoup(html, 'html.parser')
         row_listings = oc_soup.find('div', class_='row row--listing js-hide--empty-search')
@@ -215,16 +263,27 @@ def find_ccl_products(search_item):
         print('The webpage did not load in time')
     return products_list
 
-def get_all_products(search_item):
+def get_all_products(search_item, is_used):
+    '''
+    final function to combine and sort all products
+
+    param search_item: string that is used as a query for all products
+    param is_used: boolean that is true if the checkbox is ticked to included used items
+    return: returns an array of dictionaries of products
+    '''
     amazon_products = find_amazon_products(search_item)
     scan_products = find_scan_products(search_item)
     oc_products = find_oc_products(search_item)
     ccl_prodcuts = find_ccl_products(search_item)
+    eBay_products = []
 
-    all_products = amazon_products + scan_products + oc_products + ccl_prodcuts
+    if is_used:
+        eBay_products = find_eBay_products(search_item)
+
+    all_products =  amazon_products + eBay_products + scan_products + oc_products + ccl_prodcuts
     cleaned_products = []
     for x in all_products:
-        p = (x['price'].replace('£', '').replace(',', ''))
+        p = (x['price'].replace('£', '').replace('$', '').replace(',', ''))
         x['price'] = float(p)
         cleaned_products.append(x)
 
@@ -235,4 +294,4 @@ def get_all_products(search_item):
     # return temp
 
 '''Print test statements'''
-# print(find_amazon_products('rtx 5080'))
+# print(find_eBay_products('rtx 5080'))
