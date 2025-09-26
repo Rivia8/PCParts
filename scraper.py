@@ -134,6 +134,7 @@ def find_eBay_products(search_item):
                 if name_element and price_element:
                     product_name = name_element.text.strip()
                     product_url = name_element['href']
+                    product_url = product_url[8:len(product_url)]
                     price = price_element.text.strip()
 
                     products_list.append({
@@ -145,6 +146,17 @@ def find_eBay_products(search_item):
                 continue
     except TimeoutException:
         print("The webpage did not load in time")
+    
+    # Removing stubborn 'Shop on eBay' items
+    anomalies = []
+    p = 0
+    for x in products_list:
+        if x['name'] == 'Shop on eBay':
+            anomalies.append(p)
+    p = p + 1
+
+    for i in anomalies:
+        products_list.pop(i)
     return products_list
 
 '''Returns an array of dictionaries of SCAN all_products'''
@@ -294,4 +306,4 @@ def get_all_products(search_item, is_used):
     # return temp
 
 '''Print test statements'''
-# print(find_eBay_products('rtx 5080'))
+# Print(find_eBay_products('rtx 5080'))
