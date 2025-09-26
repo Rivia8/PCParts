@@ -11,7 +11,6 @@ def new_parts():
     products = []
     query = ""
 
-    # Only runs when the user submits the form
     if request.method == 'POST':
         query = request.form.get('user_text', '')
 
