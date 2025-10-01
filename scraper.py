@@ -5,6 +5,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common import TimeoutException
 from bs4 import BeautifulSoup
+import time
+import concurrent.futures
 import requests
 from operator import itemgetter
 
@@ -283,22 +285,39 @@ def get_all_products(search_item, is_used):
     param is_used: boolean that is true if the checkbox is ticked to included used items
     return: returns an array of dictionaries of products
     '''
-    amazon_products = find_amazon_products(search_item)
-    scan_products = find_scan_products(search_item)
-    oc_products = find_oc_products(search_item)
-    ccl_prodcuts = find_ccl_products(search_item)
-    eBay_products = []
+    
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        
+        all_products = []
 
-    if is_used:
-        eBay_products = find_eBay_products(search_item)
+        # List of all futures
+        futures = [
+            executor.submit(find_amazon_products, search_item),
+            executor.submit(find_scan_products, search_item),
+            executor.submit(find_oc_products, search_item),
+            executor.submit(find_ccl_products, search_item)
+        ]
+        
+        if is_used:
+            futures.append(executor.submit(find_eBay_products, search_item))
 
-    all_products =  amazon_products + eBay_products + scan_products + oc_products + ccl_prodcuts
+        # Processing the Results
+        
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result_list = future.result()
+                all_products.extend(result_list)
+            except Exception as e:
+                print(f"Scraper failed: {e}")
+
     cleaned_products = []
     for x in all_products:
-        p = (x['price'].replace('£', '').replace('$', '').replace(',', ''))
-        x['price'] = float(p)
-        cleaned_products.append(x)
-
+        try:
+            p = x['price'].replace('£', '').replace('$', '').replace(',', '')
+            x['price'] = float(p)
+            cleaned_products.append(x)
+        except(ValueError, KeyError):
+            print(f"Parsing error for product: {x.get('name', 'Unknown')}")
     sorted_products = sorted(cleaned_products, key=itemgetter('price'))
     return sorted_products
     # search_item = search_item
