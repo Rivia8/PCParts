@@ -322,7 +322,7 @@ def get_all_products(search_item, is_used):
     return sorted_products
     # search_item = search_item
     # temp = [{'name': 'gpu1', 'url': 'gpu.com', 'price': '458'}]
-    # return temp
+    # return temp   
 
 '''Print test statements'''
 # Print(find_eBay_products('rtx 5080'))

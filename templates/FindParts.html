@@ -18,17 +18,17 @@
         </h1>
 
 
-        <form class = 'text-white px-5 py-3 border-solid cursor-auto shadow-sm shadow-white' action = '/findparts' method = 'POST'>
+        <form class = 'text-white px-5 py-3 border-solid cursor-auto shadow-sm shadow-white' action = '{{ url_for("new_parts") }}' method = 'POST'>
             <input class = 'outline-none' type='text' name='user_text' placeholder= 'Enter the item here...' value='{{query}}'>
             <button class = 'font-bold cursor-pointer' type = 'submit'> SUBMIT </button>
             <div class = 'flex-row pt-3'>
                 <input type='checkbox' id='enableUsed' name="used_parts_check" class = 'mr-2'>
-                <label for='enabledUsed' class = 'text-white'>Enable Used Parts</label>
+                <label for='enableUsed' class = 'text-white'>Enable Used Parts</label>
             </div>
         </form>
         
         {% if products %}
-            <div class = 'text-white justify-center mt-8 w-full max-w-0.70 px-4'>
+            <div class = 'text-white justify-center mt-8 w-full max-w-5xl px-4'>
                 <h2 class = 'text-xl font-semibold text-center mb-4'> Results for '{{query}}': </h2>
                 <!-- Table Starts Here -->
                 <table class = 'w-3/4 mx-auto table-auto border-collapse border'>
