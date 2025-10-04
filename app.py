@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 from scraper import get_all_products
 
 app = Flask(__name__)
