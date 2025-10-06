@@ -5,10 +5,25 @@
 </head>
 
 <body class = 'bg-bg'>
-    <nav class = 'w-full bg-accent p-4 shadow-highlights shadow-md'>
-        <a href = '{{ url_for("index") }}' class = 'text-white flex justify-center text-center font-bold text-lg'>
-            FIND PC PART PRICES
-        </a>
+
+    <nav class='w-full bg-accent p-4 shadow-highlights shadow-md'>
+        <div class='flex items-center justify-center text-white text-lg font-bold'>
+
+            <a href='{{ url_for("login") }}' 
+                class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
+                LOGIN
+            </a>
+
+            <a href='{{ url_for("index") }}' 
+                class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
+                FIND PC PART PRICES
+            </a>
+
+            <a href='{{ url_for('register') }}' 
+                class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
+                REGISTER
+            </a>
+        </div>
     </nav>
     
     <div class=" flex items-center justify-center mt-20">
