@@ -9,20 +9,11 @@
     <nav class='w-full bg-accent p-4 shadow-highlights shadow-md'>
         <div class='flex items-center justify-center text-white text-lg font-bold'>
 
-            <a href='{{ url_for("login") }}' 
-                class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
-                LOGIN
-            </a>
-
-            <a href='{{ url_for("index") }}' 
+            <a href='{{ url_for("main.index") }}' 
                 class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
                 FIND PC PARTS
             </a>
 
-            <a href='{{ url_for('register') }}' 
-                class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
-                REGISTER
-            </a>
         </div>
     </nav>
     
@@ -32,7 +23,7 @@
                 Sign In
             </h2>
 
-            <form action="{{ url_for('login') }}" method="POST" class="space-y-6">
+            <form action="{{ url_for('main.login') }}" method="POST" class="space-y-6">
                 
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email Address</label>
