@@ -134,7 +134,7 @@ def find_eBay_products(search_item):
                 name_element = listing.find('a', class_='su-link')
                 price_element = listing.find('div', class_='s-card__attribute-row').find('span', class_='su-styled-text primary bold large-1 s-card__price')
                 if name_element and price_element:
-                    product_name = name_element.text.strip()
+                    product_name = name_element.find('span', class_ = 'su-styled-text primary default').text
                     product_url = name_element['href']
                     product_url = product_url[8:len(product_url)]
                     price = price_element.text.strip()
