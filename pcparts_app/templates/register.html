@@ -15,7 +15,7 @@
                 </a>
             </div>
 
-            <div class="flex items-center">
+            <div class='flex items-center'>
                 {% if current_user.is_authenticated %}
                     <a href='{{ url_for("main.logout") }}' 
                     class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>

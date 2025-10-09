@@ -1,0 +1,14 @@
+
+<nav class='relative w-full bg-accent p-4 shadow-highlights shadow-md'>
+    <div class='flex items-center justify-end text-white text-lg font-bold'>
+        <div class='absolute left-1/2 -translate-x-1/2'>
+            <a href="{{ url_for('main.index') }}" class="rounded-md px-3 py-1 transition-colors hover:bg-highlights">
+                FIND PC PARTS
+            </a>
+        </div>
+        <div class="flex items-center">
+            <a href='{{ url_for("main.login") }}' class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>LOGIN</a>
+            <a href='{{ url_for("main.register") }}' class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>REGISTER</a>
+        </div>
+    </div>
+</nav>

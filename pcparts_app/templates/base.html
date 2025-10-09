@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<!-- Base HTML that will act as a template -->
+
+<html>
+<head>
+    <title> PC Part Scraper</title>
+    <link rel='stylesheet' href='{{url_for("static", filename="dist/output.css") }}'>
+</head>
+
+<body class = 'bg-bg'>
+    {% if current_user.is_authenticated %}
+        {% include '_navbar_authed.html' %}
+    {% else %}
+        {% include '_navbar_guest.html' %}
+    {% endif %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

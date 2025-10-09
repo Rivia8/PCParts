@@ -1,49 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel='stylesheet' href='{{url_for("static", filename="dist/output.css") }}'>
-</head>
+{% extends "base.html" %}
 
-<body class = 'bg-bg'>
-    
-    <nav class='relative w-full bg-accent p-4 shadow-highlights shadow-md'>
-        <div class='flex items-center justify-end text-white text-lg font-bold'>
+{% block content %}
+<div class='pt-12 flex flex-col justify-center items-center text-center'>
+    <h1 class='text-white underline text-4xl font-bold mb-4'>Welcome to the PC Part Price Scraper!</h1>
 
-            <div class='absolute left-1/2 -translate-x-1/2 cursor-default'>
-                <a href="{{ url_for('main.index') }}" class="rounded-md px-3 py-1 transition-colors hover:bg-highlights">
-                    FIND PC PARTS
-                </a>
-            </div>
-
-            <div class="flex items-center">
-                {% if current_user.is_authenticated %}
-                    <a href='{{ url_for("main.logout") }}' 
-                    class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
-                        LOGOUT
-                    </a>
-                {% else %}
-                    <a href='{{ url_for("main.login") }}' 
-                    class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
-                        LOGIN
-                    </a>
-                    <a href='{{ url_for("main.register") }}' 
-                    class='mx-6 rounded-md px-3 py-1 transition-colors hover:bg-highlights'>
-                        REGISTER
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-    
-    <div class = 'pt-12 flex flex-col justify-center items-center'>
-        <h1 class = 'text-white underline text-4xl font-bold mb-4'>Welcome to the PC part Price Scraper!</h1>
-        <p class = 'text-white mb-8'>Click the button below to start searching for components.</p>
-        <a href = '{{ url_for("main.new_parts") }}' 
-        class = 'bg-accent hover:bg-highlights text-white font-bold py-3 px-6 mx-3 rounded-lg transition-colors'>
+    {% if current_user.is_authenticated %}
+        <p class='text-white mb-8'>Click the button below to start searching for components.</p>
+        <a href='{{ url_for("main.new_parts") }}' 
+           class='bg-accent hover:bg-highlights text-white font-bold py-3 px-6 mx-3 rounded-lg transition-colors'>
             FIND PARTS
         </a>
-    </div>
-    
-</body>
-
-</html>
+    {% else %}
+        <p class='text-white mb-8 text-xl'>
+            Please <a href='{{ url_for("main.login") }}' class='text-highlights hover:underline'>log in</a> 
+            or <a href='{{ url_for("main.register") }}' class='text-highlights hover:underline'>register</a> to start finding parts.
+        </p>
+    {% endif %}
+</div>
+{% endblock %}
